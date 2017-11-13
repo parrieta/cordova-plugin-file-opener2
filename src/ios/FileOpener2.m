@@ -26,6 +26,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #import <QuartzCore/QuartzCore.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+@interface FileOpener2()
+@property (nonatomic, strong) UIView* dimView;
+@end
+
 @implementation FileOpener2
 @synthesize controller = docController;
 
@@ -80,7 +84,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			wasOpened = [docController presentPreviewAnimated: NO];
 		} else {
 			CDVViewController* cont = self.cdvViewController;
-			CGRect rect = CGRectMake(0, 0, cont.view.bounds.size.width, cont.view.bounds.size.height);
+			CGRect rect = CGRectMake(cont.view.bounds.size.width, cont.view.bounds.size.height, 1, 1);
 			wasOpened = [docController presentOpenInMenuFromRect:rect inView:cont.view animated:YES];
 		}
 
@@ -106,4 +110,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	- (UIViewController *)documentInteractionControllerViewControllerForPreview:(UIDocumentInteractionController *)controller {
 		return self.cdvViewController;
 	}
+
+- (void)documentInteractionControllerWillPresentOpenInMenu:(UIDocumentInteractionController *)controller
+{
+    UIViewController* containerVC = [super viewController];
+    _dimView = [[UIView alloc] initWithFrame:containerVC.view.bounds];
+    _dimView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
+    [containerVC.view addSubview:_dimView];
+}
+
+- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
+{
+    [_dimView removeFromSuperview];
+    _dimView = nil;
+}
+
 @end
