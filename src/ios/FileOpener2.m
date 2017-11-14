@@ -104,6 +104,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	});
 }
 
+- (void)orientationChanged:(NSNotification*)notification
+{
+    [self documentInteractionControllerDidDismissOpenInMenu:docController];
+}
+
 @end
 
 @implementation FileOpener2 (UIDocumentInteractionControllerDelegate)
@@ -117,12 +122,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     _dimView = [[UIView alloc] initWithFrame:containerVC.view.bounds];
     _dimView.backgroundColor = [UIColor colorWithWhite:0.0f alpha:0.4f];
     [containerVC.view addSubview:_dimView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(orientationChanged:)    name:UIDeviceOrientationDidChangeNotification
+                                               object:nil];
 }
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
     [_dimView removeFromSuperview];
     _dimView = nil;
+    docController = nil;
+    
+    [[NSNotificationCenter defaultCenter]removeObserver:self
+                                                   name:UIDeviceOrientationDidChangeNotification
+                                                 object:nil];
+}
+
+- (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)controller
+{
+    docController = nil;
 }
 
 @end
